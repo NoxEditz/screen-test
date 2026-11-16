@@ -1,0 +1,1426 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>فحص الشاشة الاحترافي | Screen Test Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #090a0f;
+  --surface: #11131a;
+  --surface-hover: #171a24;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(198, 255, 61, 0.4);
+  --fg: #f3f4f8;
+  --fg-muted: #8e92a4;
+  --fg-subtle: #5f6377;
+  --acc: #c6ff3d;
+  --acc-glow: rgba(198, 255, 61, 0.25);
+  --danger: #ff4d4d;
+  --success: #22c55e;
+  --info: #38bdf8;
+  --warning: #f59e0b;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+  --font-main: "IBM Plex Sans Arabic", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 16px/1.8 var(--font-main);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  selection-background-color: var(--acc);
+  selection-color: #000;
+}
+
+::selection {
+  background: var(--acc);
+  color: #000;
+}
+
+/* Ambient Background Lights */
+.ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.ambient::before {
+  content: "";
+  position: absolute;
+  top: -10vw;
+  right: 15%;
+  width: 45vw;
+  height: 45vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(198, 255, 61, 0.04) 0%, rgba(0, 0, 0, 0) 70%);
+  filter: blur(60px);
+}
+.ambient::after {
+  content: "";
+  position: absolute;
+  top: 30vh;
+  left: 5%;
+  width: 40vw;
+  height: 40vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.03) 0%, rgba(0, 0, 0, 0) 70%);
+  filter: blur(80px);
+}
+
+/* Glowing Top Line */
+.top-strip {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ff3b3b 0%, #2dff7a 33.3%, #3b6bff 66.6%, #c6ff3d 100%);
+  z-index: 50;
+  box-shadow: 0 1px 12px rgba(198, 255, 61, 0.3);
+}
+
+/* Header & Container */
+main {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero Section */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 48px;
+  align-items: center;
+  padding: 72px 0 54px;
+  border-bottom: 1px solid var(--border);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 12px/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  color: var(--acc);
+  background: rgba(198, 255, 61, 0.08);
+  border: 1px solid rgba(198, 255, 61, 0.2);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  margin-bottom: 24px;
+  direction: ltr;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: var(--acc);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--acc);
+}
+
+h1 {
+  font-weight: 700;
+  font-size: clamp(38px, 6vw, 76px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+h1 em {
+  font-style: normal;
+  color: var(--acc);
+  position: relative;
+  display: inline-block;
+}
+
+h1 em::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--acc-glow);
+  border-radius: 3px;
+  z-index: -1;
+}
+
+.lead {
+  color: var(--fg-muted);
+  max-width: 620px;
+  margin-top: 20px;
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+/* Subpixel Animation Box */
+.pixel-matrix {
+  display: flex;
+  gap: 10px;
+  width: 140px;
+  height: 140px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #13151f 0%, #0c0e14 100%);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.pixel-matrix span {
+  flex: 1;
+  border-radius: 6px;
+  animation: glowSub 3.6s ease-in-out infinite;
+}
+
+.pixel-matrix span:nth-child(1) { background: #ff3b3b; box-shadow: 0 0 24px rgba(255, 59, 59, 0.5); }
+.pixel-matrix span:nth-child(2) { background: #2dff7a; box-shadow: 0 0 24px rgba(45, 255, 122, 0.5); animation-delay: 0.4s; }
+.pixel-matrix span:nth-child(3) { background: #3b6bff; box-shadow: 0 0 24px rgba(59, 107, 255, 0.5); animation-delay: 0.8s; }
+
+@keyframes glowSub {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.97); }
+}
+
+/* Metric Chips */
+.specs-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.spec-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 8px 18px;
+  font-size: 14px;
+  color: var(--fg-muted);
+  transition: all 0.2s ease;
+}
+
+.spec-chip b {
+  color: var(--fg);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  direction: ltr;
+}
+
+.spec-chip.action {
+  cursor: pointer;
+}
+.spec-chip.action:hover {
+  background: var(--surface-hover);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--fg);
+  transform: translateY(-1px);
+}
+
+.spec-chip .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--acc);
+  box-shadow: 0 0 8px var(--acc);
+}
+
+.note-box {
+  margin-top: 18px;
+  font-size: 14px;
+  color: var(--fg-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shortcut-tips {
+  margin-top: 22px;
+  font-size: 13px;
+  color: var(--fg-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+kbd {
+  font: 500 12px var(--font-mono);
+  background: #181b24;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  padding: 2px 7px;
+  color: var(--fg);
+}
+
+/* Section styling */
+section {
+  padding: 64px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-head {
+  margin-bottom: 32px;
+}
+
+.section-head h2 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.section-head p {
+  color: var(--fg-muted);
+  margin-top: 6px;
+  font-size: 16px;
+}
+
+/* Preparation Cards Grid */
+.prep-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  list-style: none;
+}
+
+.prep-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  position: relative;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.prep-card:hover {
+  background: var(--surface-hover);
+  border-color: rgba(255, 255, 255, 0.16);
+  transform: translateY(-2px);
+}
+
+.prep-num {
+  font: 600 12px var(--font-mono);
+  color: var(--acc);
+  letter-spacing: 0.12em;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.prep-card h4 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.prep-card p {
+  color: var(--fg-muted);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+/* Test Cards Grid */
+.tests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.test-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.test-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: transparent;
+  transition: background 0.25s ease;
+}
+
+.test-card:hover {
+  background: var(--surface-hover);
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+.test-card:hover::before {
+  background: var(--acc);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-badge {
+  font: 500 12px var(--font-mono);
+  color: var(--fg-subtle);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+}
+
+.test-card h3 {
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-top: 8px;
+}
+
+.test-card p {
+  color: var(--fg-muted);
+  font-size: 15px;
+  line-height: 1.7;
+  flex: 1;
+}
+
+.card-action {
+  margin-top: 12px;
+}
+
+.btn-launch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--fg);
+  color: #0b0c11;
+  border-radius: var(--radius-full);
+  padding: 10px 22px;
+  font-weight: 600;
+  font-size: 15px;
+  border: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-main);
+}
+
+.btn-launch svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+}
+
+.btn-launch:hover {
+  background: var(--acc);
+  box-shadow: 0 0 20px var(--acc-glow);
+}
+
+.btn-launch:hover svg {
+  transform: translateX(-3px);
+}
+
+/* Fullscreen Overlay Engine */
+#ov {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+  user-select: none;
+}
+
+#ov[hidden] {
+  display: none;
+}
+
+#ov.idle {
+  cursor: none;
+}
+
+#stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Floating Overlay HUD */
+#bar {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(18, 20, 28, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-full);
+  padding: 6px 10px 6px 18px;
+  font-size: 14px;
+  color: #fff;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+
+#ov.idle #bar {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -10px);
+}
+
+#ovTitle {
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+#ovCount {
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  margin-inline-start: 8px;
+  direction: ltr;
+}
+
+.bar-sep {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 0 6px;
+}
+
+.bar-btn {
+  background: none;
+  border: 0;
+  color: #d1d5db;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  font-family: var(--font-main);
+}
+
+.bar-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.bar-btn.close {
+  background: rgba(255, 77, 77, 0.15);
+  color: #ff6b6b;
+}
+
+.bar-btn.close:hover {
+  background: #ff4d4d;
+  color: #fff;
+}
+
+/* Floating Advice Tip Box */
+#tip {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translate(-50%, 12px);
+  width: max-content;
+  max-width: min(760px, 92vw);
+  background: rgba(18, 20, 28, 0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  color: #f3f4f8;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-md);
+  padding: 16px 26px;
+  font-size: 15.5px;
+  line-height: 1.8;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  z-index: 10;
+}
+
+#tip.on {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+/* Motion Clarity Widgets */
+.mb { position: absolute; left: 0; width: 18vh; height: 18vh; will-change: transform; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+.mt { position: absolute; left: 0; white-space: nowrap; font: 700 8.5vh/1.2 var(--font-mono); will-change: transform; }
+.motion-hud {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-full);
+  padding: 8px 20px;
+  font: 500 14px var(--font-mono);
+  color: #fff;
+}
+
+/* Refresh Rate Widget */
+.rf-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #fff;
+  text-align: center;
+  padding: 24px;
+}
+
+.rf-num {
+  font: 200 clamp(100px, 20vw, 240px)/1 var(--font-mono);
+  color: #fff;
+  direction: ltr;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 40px rgba(198, 255, 61, 0.2);
+}
+
+.rf-unit {
+  color: var(--fg-muted);
+  font: 500 15px var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rf-graph {
+  width: min(760px, 92vw);
+  height: 140px;
+  margin: 12px 0;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.rf-metrics {
+  font: 500 14px var(--font-mono);
+  color: var(--fg-muted);
+}
+
+.rf-verdict {
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--acc);
+  min-height: 2em;
+  max-width: 680px;
+  margin-top: 4px;
+}
+
+/* Stuck Pixel Warning & Action */
+.warn-box {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  color: #fff;
+  text-align: center;
+  padding: 32px;
+}
+
+.warn-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: var(--warning);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.warn-box h4 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--warning);
+}
+
+.warn-box p {
+  max-width: 540px;
+  color: var(--fg-muted);
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.warn-btn {
+  background: var(--warning);
+  color: #000;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 12px 30px;
+  border-radius: var(--radius-full);
+  border: 0;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  font-family: var(--font-main);
+}
+
+.warn-btn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
+}
+
+/* Grayscale Banding Slides */
+.steps-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+.step-item {
+  flex: 1;
+  height: 100%;
+}
+
+/* Footer */
+footer {
+  padding: 40px 0 0;
+  color: var(--fg-subtle);
+  font-size: 14px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.footer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 500 12px var(--font-mono);
+  color: var(--acc);
+}
+
+@media (max-width: 820px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding-top: 48px;
+  }
+  .pixel-matrix {
+    display: none;
+  }
+  #bar {
+    max-width: 94vw;
+    overflow-x: auto;
+    padding: 6px 12px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="top-strip"></div>
+<div class="ambient"></div>
+
+<main>
+  <!-- Hero Section -->
+  <header class="hero">
+    <div>
+      <span class="eyebrow">SCREEN TEST PRO · 144Hz+ READY</span>
+      <h1>افحص شاشتك بدقة<br><em>قبل أن تقرّر الشراء.</em></h1>
+      <p class="lead">أداة فحص متكاملة بملء الشاشة للكشف الدقيق عن البكسلات الميتة، تسريب الإضاءة، زمن الاستجابة، وتجانس الألوان دون تثبيت أي برامج.</p>
+
+      <!-- Live Hardware Specs -->
+      <div class="specs-bar">
+        <span class="spec-chip">
+          <span class="dot"></span>
+          الدقة الحالية: <b id="cRes">—</b>
+        </span>
+        <button class="spec-chip action" id="cHzBtn" title="انقر لإعادة القياس التلقائي">
+          <span class="dot"></span>
+          التردد المقاس: <b id="cHz">جارٍ القياس…</b>
+        </button>
+        <span class="spec-chip" id="hdrChip">
+          عمق الألوان: <b id="cDepth">24-bit</b>
+        </span>
+      </div>
+
+      <p class="note-box" id="resNote"></p>
+
+      <div class="shortcut-tips">
+        <span>أثناء الاختبار بملء الشاشة:</span>
+        <span><kbd>Space</kbd> أو <kbd>←</kbd> التالي</span>
+        <span><kbd>→</kbd> السابق</span>
+        <span><kbd>I</kbd> النصيحة والتوجيه</span>
+        <span><kbd>F</kbd> ملء الشاشة</span>
+        <span><kbd>Esc</kbd> إنهاء الاختبار</span>
+      </div>
+    </div>
+
+    <!-- Animated Subpixel Box -->
+    <div class="pixel-matrix" aria-hidden="true" title="محاكاة بكسلات RGB الفرعية">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </header>
+
+  <!-- Preparation Guide -->
+  <section id="prep">
+    <div class="section-head">
+      <h2>خطوات التحضير الموصى بها</h2>
+      <p>دقيقتان من الإعداد الدقيق تمنحك نتائج حقيقية وتكشف العيوب المصنعية فوراً.</p>
+    </div>
+
+    <div class="prep-grid">
+      <div class="prep-card">
+        <span class="prep-num">01 / الفحص المادي</span>
+        <h4>فحص الإطار والمنافذ</h4>
+        <p>تأكد من سلامة الصندوق، ومطابقة الرقم التسلسلي، وثبات حامل الشاشة، وسلامة أزرار التحكم ومنافذ التوصيل.</p>
+      </div>
+
+      <div class="prep-card">
+        <span class="prep-num">02 / كابل عالي السرعة</span>
+        <h4>استخدم DisplayPort أو HDMI 2.0+</h4>
+        <p>الكابلات القديمة قد تحصر الشاشة في 60Hz. للوصول إلى 144Hz أو 240Hz استخدم كابل DisplayPort المرفق.</p>
+      </div>
+
+      <div class="prep-card">
+        <span class="prep-num">03 / ضبط نظام التشغيل</span>
+        <h4>تفعيل التردد الأقصى في النظام</h4>
+        <p>من إعدادات العرض المتقدمة في نظامك، تأكد من اختيار أعلى معدل تحديث مدعوم (144Hz / 165Hz / 240Hz).</p>
+      </div>
+
+      <div class="prep-card">
+        <span class="prep-num">04 / استعادة المصنع</span>
+        <h4>إعادة ضبط إعدادات الشاشة (Reset)</h4>
+        <p>من القائمة الداخلية للشاشة (OSD) قم بعمل Reset للإعدادات لتجنب أي موازنة ألوان أو شحذ صورة مضلل.</p>
+      </div>
+
+      <div class="prep-card">
+        <span class="prep-num">05 / تنظيف اللوحة</span>
+        <h4>امسح السطح بقطعة ميكروفايبر</h4>
+        <p>استخدم قطعة قماش ناعمة وجافة تماماً. ذرات الغبار أو البقع الدقيقة تتطابق بصرياً مع البكسل الميت.</p>
+      </div>
+
+      <div class="prep-card">
+        <span class="prep-num">06 / الإحماء الحراري</span>
+        <h4>اترك الشاشة تعمل 10 دقائق</h4>
+        <p>تحتاج لوحات IPS و VA فترة تسخين قصيرة حتى تستقر بلورات اللوحة وتظهر مستويات السطوع الحقيقية.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Tests Grid -->
+  <section id="tests">
+    <div class="section-head">
+      <h2>مجموعة الاختبارات</h2>
+      <p>اختر الاختبار واضغط للتشغيل المباشر بملء الشاشة (Fullscreen).</p>
+    </div>
+
+    <div class="tests-grid" id="grid"></div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-badge">
+      <span>●</span> تعمل الأداة محلياً 100% بدون أي خوادم أو تتبع
+    </div>
+    <p>تم إعداد وتطوير الأداة لفحص الشاشات بدقة احترافية عالية.</p>
+  </footer>
+</main>
+
+<!-- Fullscreen Test Overlay Engine -->
+<div id="ov" hidden>
+  <div id="stage"></div>
+
+  <!-- Floating HUD -->
+  <div id="bar">
+    <span id="ovTitle"></span>
+    <span id="ovCount"></span>
+    <span class="bar-sep"></span>
+    <button class="bar-btn" id="bPrev">السابق</button>
+    <button class="bar-btn" id="bNext">التالي</button>
+    <button class="bar-btn" id="bTip">إرشادات</button>
+    <button class="bar-btn" id="bFs">ملء الشاشة</button>
+    <button class="bar-btn close" id="bClose">إنهاء ✕</button>
+  </div>
+
+  <!-- Dynamic Advice Tip Toast -->
+  <div id="tip" role="status"></div>
+</div>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const el = (t, c, h) => {
+  const e = document.createElement(t);
+  if (c) e.className = c;
+  if (h != null) e.innerHTML = h;
+  return e;
+};
+const S = (bg, tip) => ({ bg, tip });
+
+/* ---------------- MOTION TEST ENGINE ---------------- */
+const SPD = [240, 480, 960, 1440, 1920];
+const mot = { i: 2 };
+
+function motion(mode, tip) {
+  return {
+    tip,
+    rs: true,
+    key(e) {
+      if (e.key === 'ArrowUp') {
+        mot.i = Math.min(SPD.length - 1, mot.i + 1);
+        return true;
+      }
+      if (e.key === 'ArrowDown') {
+        mot.i = Math.max(0, mot.i - 1);
+        return true;
+      }
+      return false;
+    },
+    run(st) {
+      st.style.cssText = 'background:' + (mode === 'box' ? '#444851' : '#08090d') + ';direction:ltr';
+      const items = [];
+      const cols = ['#ffffff', '#000000', '#ff3b3b', '#3b82f6'];
+      const txt = ['#ffffff', '#a1a1aa', '#ff4d4d', '#22c55e'];
+
+      cols.forEach((c, r) => {
+        const e = el('div', mode === 'box' ? 'mb' : 'mt');
+        e.style.top = (6 + r * 22) + 'vh';
+        if (mode === 'box') {
+          e.style.background = c;
+        } else {
+          e.textContent = '144Hz · MOTION CLARITY · 0123456789';
+          e.style.color = txt[r];
+        }
+        st.appendChild(e);
+        items.push(e);
+      });
+
+      const hud = el('div', 'motion-hud');
+      st.appendChild(hud);
+
+      const W = st.clientWidth;
+      const ws = items.map(e => e.offsetWidth);
+      const span = W + Math.max(...ws);
+      let x = 0, last = 0, raf;
+      const fr = [];
+
+      const tick = t => {
+        raf = requestAnimationFrame(tick);
+        if (last) {
+          const dt = t - last;
+          fr.push(dt);
+          if (fr.length > 90) fr.shift();
+          x = (x + dt / 1000 * SPD[mot.i]) % span;
+          items.forEach((e, k) => {
+            e.style.transform = 'translate3d(' + (x - ws[k]) + 'px,0,0)';
+          });
+        }
+        last = t;
+      };
+      raf = requestAnimationFrame(tick);
+
+      const iv = setInterval(() => {
+        if (fr.length < 5) return;
+        const a = fr.reduce((s, v) => s + v, 0) / fr.length;
+        hud.textContent = SPD[mot.i] + ' px/s · ' + Math.round(1000 / a) + ' FPS · استخدم ↑ ↓ لضبط السرعة';
+      }, 250);
+
+      return () => {
+        cancelAnimationFrame(raf);
+        clearInterval(iv);
+      };
+    }
+  };
+}
+
+/* ---------------- REFRESH RATE & FRAME JITTER ---------------- */
+function refreshSlide() {
+  return {
+    tip: 'اترك هذا الاختبار لثوانٍ. الرقم يمثل معدل التحديث الحقيقي، والأعمدة الحمراء تشير إلى تقطيع الإطارات (Frame Drops).',
+    run(st) {
+      st.style.background = '#06070a';
+      const box = el('div', 'rf-container',
+        '<div class="rf-num">…</div>' +
+        '<div class="rf-unit">Hz · التردد المباشر المقاس</div>' +
+        '<canvas class="rf-graph" width="760" height="140"></canvas>' +
+        '<div class="rf-metrics"></div>' +
+        '<div class="rf-verdict"></div>'
+      );
+      st.appendChild(box);
+
+      const cv = $('.rf-graph', box),
+            c = cv.getContext('2d'),
+            n = $('.rf-num', box),
+            m = $('.rf-metrics', box),
+            v = $('.rf-verdict', box);
+
+      const d = [];
+      let last = 0, raf;
+
+      const tick = t => {
+        raf = requestAnimationFrame(tick);
+        if (last) {
+          d.push(t - last);
+          if (d.length > 240) d.shift();
+        }
+        last = t;
+      };
+      raf = requestAnimationFrame(tick);
+
+      const verdict = hz => {
+        if (hz >= 235) return 'ممتاز جداً: الشاشة تعمل بتردد 240Hz فائق السلاسة.';
+        if (hz >= 160) return 'ممتاز: الشاشة تعمل بتردد 165Hz.';
+        if (hz >= 138) return 'مثالي: الشاشة تعمل بتردد 144Hz المخصص للألعاب.';
+        if (hz >= 115) return 'معدل جيد (120Hz)، لكن تأكد من ضبط 144Hz من إعدادات كرت الشاشة.';
+        if (hz >= 55 && hz <= 65) return 'تنبيه: الشاشة محصورة في 60Hz! فعّل 144Hz من إعدادات العرض في ويندوز وتأكد من الكابل.';
+        return 'قياس غير مستقر: أغلق التبويبات والبرامج الثقيلة في الخلفية.';
+      };
+
+      const upd = () => {
+        if (d.length < 20) return;
+        const s = [...d].sort((a, b) => a - b);
+        const med = s[s.length >> 1];
+        const hz = 1000 / med;
+        const drops = d.filter(x => x > med * 1.45).length;
+
+        n.textContent = Math.round(hz);
+        m.textContent = 'زمن الإطار: ' + med.toFixed(1) + 'ms · الإطار الأبطأ: ' + s[s.length - 1].toFixed(1) + 'ms · تأخير الإطارات: ' + drops + '/' + d.length;
+        v.textContent = verdict(hz);
+
+        const W = cv.width, H = cv.height;
+        const max = Math.max(25, med * 2.5);
+        const bw = W / 240;
+
+        c.clearRect(0, 0, W, H);
+        d.forEach((x, i) => {
+          c.fillStyle = x > med * 1.45 ? '#ff4d4d' : 'rgba(255, 255, 255, 0.6)';
+          const hh = Math.min(H, (x / max) * H);
+          c.fillRect(i * bw, H - hh, Math.max(1, bw - 1), hh);
+        });
+
+        c.strokeStyle = '#c6ff3d';
+        c.lineWidth = 1.5;
+        c.setLineDash([4, 4]);
+        c.beginPath();
+        const y = H - (med / max) * H;
+        c.moveTo(0, y);
+        c.lineTo(W, y);
+        c.stroke();
+      };
+
+      const iv = setInterval(upd, 200);
+      return () => {
+        cancelAnimationFrame(raf);
+        clearInterval(iv);
+      };
+    }
+  };
+}
+
+/* ---------------- STUCK PIXEL FLASHER ---------------- */
+const flashSlide = {
+  ownClick: true,
+  tip: 'اترك الوميض يعمل لمدة 5 إلى 10 دقائق لتنشيط بلورات البكسل العالق. لا تضغط على الشاشة بيدك إطلاقاً.',
+  run(st) {
+    st.style.background = '#000';
+    const b = el('div', 'warn-box',
+      '<div class="warn-icon">⚠</div>' +
+      '<h4>تحذير: وميض ألوان سريع</h4>' +
+      '<p>يحتوي هذا الاختبار على وميض لوني متكرر وسريع. إذا كنت تعاني من حساسية الضوء أو الصرع الضوئي، تجنب هذا الاختبار. انقر في أي مكان للخروج فوراً.</p>' +
+      '<button class="warn-btn">أوافق، ابدأ وميض التنشيط</button>'
+    );
+    st.appendChild(b);
+
+    let t = null, i = 0;
+    const C = ['#ff0000', '#00ff00', '#0000ff', '#ffffff', '#ffff00', '#ff00ff', '#00ffff', '#000000'];
+
+    const stop = () => {
+      clearInterval(t);
+      t = null;
+      b.style.display = '';
+      st.style.background = '#000';
+    };
+
+    $('.warn-btn', b).onclick = e => {
+      e.stopPropagation();
+      b.style.display = 'none';
+      t = setInterval(() => {
+        st.style.background = C[i++ % C.length];
+      }, 100);
+    };
+
+    st.onclick = () => {
+      if (t) stop();
+    };
+
+    return () => {
+      clearInterval(t);
+      st.onclick = null;
+    };
+  }
+};
+
+/* ---------------- CONTRAST & GRADIENT TEST ---------------- */
+function gradientSlide() {
+  return {
+    tip: 'افحص تدرج الألوان والرمادي: يجب أن يكون الانتقال ناعماً ومتصلاً دون خطوط عمودية خشنة (Banding) التي تدل على لوحة 6-bit معالجة.',
+    dom(st) {
+      st.style.cssText = 'background:#000;display:flex;flex-direction:column;width:100vw;height:100vh';
+      const g1 = el('div', '', '');
+      g1.style.cssText = 'flex:1;background:linear-gradient(90deg, #000 0%, #fff 100%)';
+      const g2 = el('div', '', '');
+      g2.style.cssText = 'flex:1;background:linear-gradient(90deg, #000 0%, #f00 20%, #ff0 40%, #0f0 60%, #0ff 80%, #00f 100%)';
+      const steps = el('div', 'steps-container');
+      for (let i = 0; i < 16; i++) {
+        const v = Math.round((i / 15) * 255);
+        const s = el('div', 'step-item');
+        s.style.background = 'rgb(' + v + ',' + v + ',' + v + ')';
+        steps.appendChild(s);
+      }
+      steps.style.flex = '1';
+      st.appendChild(g1);
+      st.appendChild(g2);
+      st.appendChild(steps);
+    }
+  };
+}
+
+/* ---------------- TEST DEFINITIONS ---------------- */
+const TESTS = [
+  {
+    id: 'dead',
+    title: 'البكسلات الميتة والعالقة',
+    desc: 'ألوان نقية بملء الشاشة لكشف أي بكسل معطّل أو نقطة مضيئة عالقة بلون ثابت.',
+    badge: '5 ألوان أساسية',
+    slides: [
+      S('#000000', 'الأسود التام: أي نقطة مضيئة هي بكسل عالق (Stuck Pixel). أطفئ أنوار الغرفة وتفحص كامل الشاشة.'),
+      S('#ffffff', 'الأبيض النقي: أي نقطة سوداء هي بكسل ميت (Dead Pixel). تأكد من نظافة الشاشة من الغبار.'),
+      S('#ff0000', 'الأحمر النقي: يفحص سلامة البكسلات الفرعية الحمراء (Sub-pixels).'),
+      S('#00ff00', 'الأخضر النقي: بكسلات اللون الأخضر هي الأكثر وضوحاً لعين الإنسان، ابحث عن أي خلل.'),
+      S('#0000ff', 'الأزرق النقي: يفحص سلامة البكسل الفرعي الأزرق ووضوح النقاط الداكنة.')
+    ]
+  },
+  {
+    id: 'bleed',
+    title: 'تسريب الإضاءة وتوهج IPS',
+    desc: 'خلفية سوداء ورمادية معتمة في غرفة مظلمة لفحص زوايا الشاشة وتجانس الإضاءة الخلفية.',
+    badge: 'فحص التباين والزوايا',
+    slides: [
+      S('#000000', 'أطفئ أنوار الغرفة تماماً. توهج خفيف بالزوايا يتغير بتغير زاوية نظرك هو IPS Glow الطبيعي. أما البقع البيضاء الثابتة عند النظر المباشر فهي تسريب إضاءة (Backlight Bleed).'),
+      S('#0d0e12', 'رمادي معتم جداً (5%): يكشف عدم تجانس الإضاءة والبقع الساطعة غير المتساوية خلف اللوحة.')
+    ]
+  },
+  {
+    id: 'motion',
+    title: 'سلاسة الحركة والظلال (Ghosting)',
+    desc: 'أجسام ونصوص متحركة بسرعات مختلفة لاختبار زمن الاستجابة (Response Time) وضبابية الحركة.',
+    badge: 'اختبار 144Hz+ والأشباح',
+    slides: [
+      motion('box', 'تتبع المربعات بعينيك: إذا رأيت هالة طويلة خلف المربع فهذا Ghosting. اضبط خيار Response Time في شاشتك على Fast (وتجنب وضع Fastest إذا سبب هالة معكوسة).'),
+      motion('text', 'اقرأ النص أثناء تحركه السريع: في شاشات 144Hz الحقيقية يجب أن يبقى النص مقروءاً بوضوح.')
+    ]
+  },
+  {
+    id: 'refresh',
+    title: 'معدل التحديث الحقيقي والتقطيع',
+    desc: 'قياس دقيق لتردد الشاشة الفعلي بالهرتز ورسم بياني لحظي لثبات زمن الإطارات (Frame Time).',
+    badge: 'عداد Hz حقيقي',
+    slides: [refreshSlide()]
+  },
+  {
+    id: 'gradient',
+    title: 'تدرج الألوان والرمادي (Color Banding)',
+    desc: 'أشرطة تدرج لوني دقيقة لفحص عمق ألوان اللوحة (8-bit / 10-bit) وغياب الخطوط اللونية الخشنة.',
+    badge: 'فحص عمق اللوحة',
+    slides: [gradientSlide()]
+  },
+  {
+    id: 'flash',
+    title: 'تنشيط البكسل العالق (Reviver)',
+    desc: 'دورة وميض سريع متعددة الألوان لتحفيز بلورات البكسلات العالقة وإعادتها للعمل.',
+    badge: 'علاج البكسل العالق',
+    slides: [flashSlide]
+  }
+];
+
+/* ---------------- RENDER TEST CARDS ---------------- */
+const grid = $('#grid');
+TESTS.forEach((t, i) => {
+  const c = el('article', 'test-card');
+  c.innerHTML =
+    '<div class="card-top">' +
+      '<span class="card-badge">' + t.badge + '</span>' +
+      '<span style="font-family:var(--font-mono);font-size:12px;color:var(--acc)">' + String(i + 1).padStart(2, '0') + '</span>' +
+    '</div>' +
+    '<div>' +
+      '<h3>' + t.title + '</h3>' +
+      '<p>' + t.desc + '</p>' +
+    '</div>' +
+    '<div class="card-action">' +
+      '<button class="btn-launch" data-open="' + t.id + '">' +
+        'ابدأ الاختبار' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>' +
+      '</button>' +
+    '</div>';
+  grid.appendChild(c);
+});
+
+grid.addEventListener('click', e => {
+  const o = e.target.closest('[data-open]');
+  if (o) openTest(o.dataset.open);
+});
+
+/* ---------------- OVERLAY CONTROLLER ---------------- */
+const ov = $('#ov'), stage = $('#stage'), tipEl = $('#tip');
+let cur = { t: null, i: 0 }, cleanup = null, tipTimer = null, uiTimer = null, pinned = false, wasFull = false;
+
+function setTip(txt) {
+  tipEl.textContent = txt;
+  tipEl.classList.add('on');
+  clearTimeout(tipTimer);
+  if (!pinned) {
+    tipTimer = setTimeout(() => tipEl.classList.remove('on'), 8000);
+  }
+}
+
+function show(keepTip) {
+  if (cleanup) {
+    try { cleanup(); } catch (e) {}
+    cleanup = null;
+  }
+  stage.innerHTML = '';
+  stage.removeAttribute('style');
+  stage.onclick = null;
+
+  const s = cur.t.slides[cur.i];
+  stage.style.background = s.bg || '#000';
+  if (s.css) stage.style.cssText = s.css;
+  if (s.dom) s.dom(stage);
+  if (s.run) cleanup = s.run(stage) || null;
+
+  $('#ovTitle').textContent = cur.t.title;
+  $('#ovCount').textContent = (cur.i + 1) + ' / ' + cur.t.slides.length;
+  if (!keepTip) setTip(s.tip);
+}
+
+function next(d) {
+  const n = cur.t.slides.length;
+  cur.i = (cur.i + d + n) % n;
+  show();
+}
+
+function flashUI() {
+  ov.classList.remove('idle');
+  clearTimeout(uiTimer);
+  uiTimer = setTimeout(() => ov.classList.add('idle'), 2800);
+}
+
+function openTest(id) {
+  cur = { t: TESTS.find(x => x.id === id), i: 0 };
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  ov.hidden = false;
+  document.body.style.overflow = 'hidden';
+
+  try {
+    const p = (ov.requestFullscreen || ov.webkitRequestFullscreen).call(ov);
+    if (p && p.catch) p.catch(() => {});
+  } catch (e) {}
+
+  show();
+  flashUI();
+}
+
+function closeTest() {
+  if (ov.hidden) return;
+  if (cleanup) {
+    try { cleanup(); } catch (e) {}
+    cleanup = null;
+  }
+  ov.hidden = true;
+  wasFull = false;
+  document.body.style.overflow = '';
+  stage.innerHTML = '';
+  clearTimeout(tipTimer);
+  tipEl.classList.remove('on');
+
+  if (document.fullscreenElement) {
+    try { document.exitFullscreen(); } catch (e) {}
+  }
+  cur.t = null;
+}
+
+function toggleFS() {
+  try {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else {
+      const p = (ov.requestFullscreen || ov.webkitRequestFullscreen).call(ov);
+      if (p && p.catch) p.catch(() => {});
+    }
+  } catch (e) {}
+}
+
+function toggleTip() {
+  pinned = !pinned;
+  if (pinned) {
+    setTip(cur.t.slides[cur.i].tip);
+  } else {
+    clearTimeout(tipTimer);
+    tipEl.classList.remove('on');
+  }
+}
+
+stage.addEventListener('click', () => {
+  if (cur.t && cur.t.slides[cur.i].ownClick) return;
+  next(1);
+});
+
+$('#bNext').onclick = e => { e.currentTarget.blur(); next(1); };
+$('#bPrev').onclick = e => { e.currentTarget.blur(); next(-1); };
+$('#bTip').onclick = e => { e.currentTarget.blur(); toggleTip(); };
+$('#bFs').onclick = e => { e.currentTarget.blur(); toggleFS(); };
+$('#bClose').onclick = closeTest;
+
+ov.addEventListener('mousemove', flashUI);
+ov.addEventListener('touchstart', flashUI, { passive: true });
+
+document.addEventListener('fullscreenchange', () => {
+  if (document.fullscreenElement) wasFull = true;
+  else if (wasFull && !ov.hidden) closeTest();
+});
+
+let rt;
+addEventListener('resize', () => {
+  clearTimeout(rt);
+  rt = setTimeout(() => {
+    if (!ov.hidden && cur.t && cur.t.slides[cur.i].rs) show(true);
+  }, 200);
+});
+
+addEventListener('keydown', e => {
+  if (ov.hidden || !cur.t) return;
+  const s = cur.t.slides[cur.i];
+  if (s.key && s.key(e)) {
+    e.preventDefault();
+    return;
+  }
+  switch (e.key) {
+    case 'ArrowLeft':
+    case ' ':
+    case 'Enter':
+    case 'PageDown':
+      next(1);
+      break;
+    case 'ArrowRight':
+    case 'Backspace':
+    case 'PageUp':
+      next(-1);
+      break;
+    case 'Escape':
+      closeTest();
+      break;
+    case 'f':
+    case 'F':
+      toggleFS();
+      break;
+    case 'i':
+    case 'I':
+      toggleTip();
+      break;
+    default:
+      return;
+  }
+  e.preventDefault();
+});
+
+/* ---------------- HARDWARE DETECTION ---------------- */
+const dpr = window.devicePixelRatio || 1;
+const rw = Math.round(screen.width * dpr), rh = Math.round(screen.height * dpr);
+$('#cRes').textContent = rw + ' × ' + rh;
+
+if (screen.colorDepth) {
+  $('#cDepth').textContent = screen.colorDepth + '-bit';
+}
+
+$('#resNote').textContent =
+  (rw === 1920 && rh === 1080) ? 'الدقة الحالية 1920×1080 (Full HD) هي دقة أصلية ممتازة ومثالية للألعاب.' :
+  (rw === 2560 && rh === 1440) ? 'الدقة الحالية 2560×1440 (2K QHD) توفر كثافة بكسلات حادة وممتازة.' :
+  (rw >= 3840 && rh >= 2160) ? 'الدقة الحالية 4K Ultra HD توفر أعلى وضوح وتفاصيل بصرية.' :
+  'الدقة المعروضة حالياً: ' + rw + '×' + rh + '. تأكد من مطابقتها للدقة الموصى بها في إعدادات نظامك.';
+
+function measureHz() {
+  return new Promise(res => {
+    const d = [];
+    let last = 0, n = 0;
+    const f = t => {
+      if (last) d.push(t - last);
+      last = t;
+      if (++n < 120) requestAnimationFrame(f);
+      else {
+        d.sort((a, b) => a - b);
+        res(1000 / d[d.length >> 1]);
+      }
+    };
+    requestAnimationFrame(f);
+  });
+}
+
+function runHz() {
+  $('#cHz').textContent = 'جارٍ القياس…';
+  measureHz().then(hz => {
+    $('#cHz').textContent = Math.round(hz) + ' Hz';
+  });
+}
+
+$('#cHzBtn').onclick = runHz;
+runHz();
+</script>
+</body>
+</html>
